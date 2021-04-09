@@ -1,0 +1,39 @@
+<!--example     -->
+<style>
+    .tooltip {
+    text-decoration: none;
+    position: relative;
+  }
+  
+  .tooltip span {
+    display: none;
+  }
+  
+  .tooltip:hover span {
+    display: block;
+    position: fixed;
+    overflow: hidden;
+  }
+  </style>
+  
+  <script>
+    var tooltipSpan = document.getElementById('tooltip-span');
+  
+  window.onmousemove = function(e) {
+    var x = e.clientX,
+      y = e.clientY;
+    tooltipSpan.style.top = (y + 20) + 'px';
+    tooltipSpan.style.left = (x + 20) + 'px';
+  };
+  </script>
+  <div title="regular tooltip">Hover me</div>
+  
+  <a class="tooltip">
+    Google
+    <span id="tooltip-span">
+      6 -> 7
+    </span>
+  </a>
+  
+  
+  <!--example end         -->

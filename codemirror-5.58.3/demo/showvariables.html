@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<title>CodeMirror: Show Variables Demo</title>
+<meta charset="utf-8"/>
+<link rel=stylesheet href="../doc/docs.css">
+
+<link rel="stylesheet" href="../lib/codemirror.css">
+<link rel="stylesheet" href="../addon/dialog/dialog.css">
+<link rel="stylesheet" href="../addon/search/matchesonscrollbar.css">
+<script src="../lib/codemirror.js"></script>
+<script src="../mode/xml/xml.js"></script>
+<script src="../addon/dialog/dialog.js"></script>
+<script src="../addon/search/searchcursor.js"></script>
+<script src="../addon/search/search.js"></script>
+<script src="../addon/scroll/annotatescrollbar.js"></script>
+<script src="../addon/search/matchesonscrollbar.js"></script>
+<script src="../addon/search/jump-to-line.js"></script>
+<script src="../mode/python/python.js"></script>
+<script src="../addon/search/searchcursor.js"></script>
+<script src="../addon/search/match-highlighter.js"></script>
+<script src="../addon/edit/closebrackets.js"></script>
+
+<style>
+      .CodeMirror {border-top: 1px solid black; border-bottom: 1px solid black;}
+      dt {font-family: monospace; color: #666;}
+
+      .CodeMirror-focused .cm-matchhighlight {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12NgYGBgkKzc8x9CMDAwAAAmhwSbidEoSQAAAABJRU5ErkJggg==);
+        background-position: bottom;
+        background-repeat: repeat-x;
+      }
+      .cm-matchhighlight {background-color: lightgreen}
+      .CodeMirror-selection-highlight-scrollbar {background-color: green}
+    </style>
+
+<style>
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+  }
+  
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: relative;
+    z-index: 1;
+    top: 0;
+    left: 100%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .tooltip .tooltiptext::after {
+    content: "";
+    position: relative;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
+  </style>
+
+  <style>
+  .highlight {
+  background-color: yellow;
+}
+  </style>
+
+
+<div id=nav>
+  <a href="https://codemirror.net"><h1>CodeMirror</h1><img id=logo src="../doc/logo.png"></a>
+
+  <ul>
+    <li><a href="../index.html">Home</a>
+    <li><a href="../doc/manual.html">Manual</a>
+    <li><a href="https://github.com/codemirror/codemirror">Code</a>
+  </ul>
+  <ul>
+    <li><a class=active href="#">Show Variables</a>
+  </ul>
+</div>
+
+
+<article>
+<h2>Show Variables Demo (Python)</h2>
+<form>
+  <div style="max-width: 50em; margin-bottom: 1em"><textarea id="code" name="code">
+//Python Code Demo:
+int a = 6;
+int b = 7;
+int a = a + b;
+int a = a++;</textarea></div>
+
+<h2>Variables Value Input:</h2>
+  <div style="max-width: 50em; margin-bottom: 1em"><textarea id="varcode" name="varcode">
+//Variables Code
+a: null->6
+b: null->7
+a: null->13
+a: 13->14</textarea></div>
+</form>
+
+<script>
+var codeeditor = CodeMirror.fromTextArea(document.getElementById("code"), {
+  mode: "python",
+  lineNumbers: true,
+  extraKeys: {"Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }},
+  foldGutter: true,
+  gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+  highlightSelectionMatches: {showToken: /\w/, annotateScrollbar: true},
+  autoCloseBrackets: true
+});
+codeeditor.on('change', (code) => {
+const text = codeeditor.doc.getValue()
+document.getElementById("showtext0").innerHTML = text;
+});
+</script>
+
+<script>
+  var vareditor = CodeMirror.fromTextArea(document.getElementById("varcode"), {
+    lineNumbers: true,
+    extraKeys: {"Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }},
+    foldGutter: true,
+    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+    highlightSelectionMatches: {showToken: /\w/, annotateScrollbar: true},
+    autoCloseBrackets: true
+  });
+  vareditor.on('change', (varcode) => {
+  const text = vareditor.doc.getValue()
+  document.getElementById("showtext").innerHTML = text;
+  });
+  </script>
+
+<p>The Content of random:</p>
+<p>-------------------------------------------------------------------------------------------------</p>
+<p id="showtextRand"></p>
+<p>-------------------------------------------------------------------------------------------------</p>
+
+<p>+++++++++++++++++++++++++++++++++++++++++++++++++++++++</p>
+<p id="box"></p>
+<p>+++++++++++++++++++++++++++++++++++++++++++++++++++++++</p>
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<p>The Content of the Python editor:</p>
+<p>======================================================</p>
+<p id="showtext0"></p>
+<p>======================================================</p>
+
+<p>The Content of the vareditor:</p>
+<p>----------------------------------------------------------------------------------</p>
+<p id="showtext"></p>
+<p>----------------------------------------------------------------------------------</p>
+
+ <!--this one should print a nice format at the box-->
+  <script>
+  //iniate the original contant
+  function refreash(){
+  var i;
+  var text = "//Show variable Demo:<br />";
+    for(i = 1; i < codeeditor.doc.lineCount(); i ++){
+      text = text + 
+        codeeditor.doc.getLine(i) + 
+          " //" +
+          vareditor.doc.getLine(i) + 
+          "<br />";
+    }
+    return text;
+  }
+
+  function refreashTooltips(mode){
+    //0: inishate 1:change
+    if(mode == 0 || mode == 1){
+      for(var i = 0; i < codeeditor.doc.lineCount(); i++){
+        var line = document.getElementById('d' + i);
+        var bar = document.getElementById('b' + i);
+        if(line != null && bar != null){
+          line.remove();
+          bar.remove();
+        }
+      }
+
+      var domfrag = document.createDocumentFragment();
+	    for(var i = 0; i < codeeditor.doc.lineCount(); i++){
+        var div = document.createElement('div');
+        var brTag = document.createElement('br');
+        brTag.id = 'b' + i;
+  	    div.id = 'd' + i;
+        div.innerHTML = codeeditor.doc.getLine(i) + 
+                        '<span class="tooltiptext">'+
+                          vareditor.doc.getLine(i) +
+                        '</span>';
+  	    div.className = 'tooltip';
+        domfrag.appendChild(div);
+        domfrag.appendChild(brTag);
+      };
+      var box = document.getElementById('box')
+      box.appendChild(domfrag);
+    }
+    
+  }
+
+  document.getElementById("showtextRand").innerHTML = refreash();
+  refreashTooltips(0);
+
+  vareditor.on('change', (varcode) => {
+    document.getElementById("showtextRand").innerHTML = refreash();
+    refreashTooltips(1);
+  });
+  
+  codeeditor.on('change', (code) => {
+    document.getElementById("showtextRand").innerHTML = refreash();
+    refreashTooltips(1);
+  });
+
+
+
+  </script>
+
+  <div id = "box"></div>
+  <script>
+    var text = vareditor.getValue();
+    document.getElementById("showtext").innerHTML = text;
+  </script>
+
+  <script>
+    var pythontext = codeeditor.getValue();
+    document.getElementById("showtext0").innerHTML = pythontext;
+  </script>
+
+  </article>
+  </html>
+
+  
